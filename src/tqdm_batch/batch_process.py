@@ -13,6 +13,7 @@ def batch_process(
     items: list,
     function: Callable,
     n_workers: int=8,
+    show_progress: bool=False,
     sep_progress: bool=False,
     *args,
     **kwargs,
@@ -54,30 +55,41 @@ def batch_process(
         for ix in range(0, len(items), batch_size)
     ]
 
-    # Check single or multiple progress bars
-    if sep_progress:
-        totals = [len(batch) for batch in batches]
-    else:
-        totals = len(items)
 
-    # Start progress bar in separate thread
-    manager = Manager()
-    queue = manager.Queue()
-    try:
-        progproc = Thread(target=progress_bar, args=(totals, queue))
-        progproc.start()
-
+    if show_progress==False:
         # Parallel process the batches
         result = Parallel(n_jobs=n_workers,prefer="threads",backend='multiprocessing')(
-            delayed(task_wrapper)
-            (pid, function, batch, queue, *args, **kwargs)
-            for pid, batch in enumerate(batches)
+            delayed(function)
+            (batch,  *args, **kwargs)
+            for i, batch in enumerate(batches)
         )
+        
+    elif show_progress==True:
 
-    finally:
-        # Stop the progress bar thread
-        queue.put('done')
-        progproc.join()
+        # Check single or multiple progress bars
+        if sep_progress:
+            totals = [len(batch) for batch in batches]
+        else:
+            totals = len(items)
+    
+        # Start progress bar in separate thread
+        manager = Manager()
+        queue = manager.Queue()
+        try:
+            progproc = Thread(target=progress_bar, args=(totals, queue))
+            progproc.start()
+    
+            # Parallel process the batches
+            result = Parallel(n_jobs=n_workers,prefer="threads",backend='multiprocessing')(
+                delayed(task_wrapper)
+                (pid, function, batch, queue, *args, **kwargs)
+                for pid, batch in enumerate(batches)
+            )
+    
+        finally:
+            # Stop the progress bar thread
+            queue.put('done')
+            progproc.join()
 
     # Flatten result
     flattened = [item for sublist in result for item in sublist]
