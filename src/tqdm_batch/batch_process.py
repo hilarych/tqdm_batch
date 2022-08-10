@@ -68,7 +68,7 @@ def batch_process(
         progproc.start()
 
         # Parallel process the batches
-        result = Parallel(n_jobs=n_workers)(
+        result = Parallel(n_jobs=n_workers,prefer="threads",backend='multiprocessing')(
             delayed(task_wrapper)
             (pid, function, batch, queue, *args, **kwargs)
             for pid, batch in enumerate(batches)
