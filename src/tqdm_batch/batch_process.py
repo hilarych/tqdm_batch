@@ -13,7 +13,7 @@ def batch_process(
     items: list,
     function: Callable,
     n_workers: int=8,
-    show_progress: bool=False,
+    show_progress: bool=True,
     sep_progress: bool=False,
     *args,
     **kwargs,

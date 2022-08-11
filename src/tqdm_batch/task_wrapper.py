@@ -1,6 +1,6 @@
 def task_wrapper(pid, function, batch, queue, *args, **kwargs):
     """
-    Wrapper to add progress bar update
+    Wrapper to add progress bar update.
     """
     result = []
     for example in batch:
@@ -8,9 +8,9 @@ def task_wrapper(pid, function, batch, queue, *args, **kwargs):
         queue.put(f'update{pid}')
     return result
 
-def task_wrapper_no_q(pid, function, batch,*args, **kwargs):
+def task_wrapper_no_q(pid, function, batch, *args, **kwargs):
     """
-    Wrapper to add progress bar update
+    Wrapper to batches, no progress bar. 
     """
     result = []
     for example in batch:
