@@ -15,6 +15,7 @@ def batch_process(
     n_workers: int=8,
     show_progress: bool=True,
     sep_progress: bool=False,
+    prefer='thread',backend='multiprocessing',
     *args,
     **kwargs,
     ) -> List[Dict[str, Union[str, List[str]]]]:
@@ -58,7 +59,7 @@ def batch_process(
 
     if show_progress==False:
         # Parallel process the batches
-        result = Parallel(n_jobs=n_workers,prefer="threads",backend='multiprocessing')(
+        result = Parallel(n_jobs=n_workers,prefer=prefer,backend=backend)(
             delayed(task_wrapper_no_q)
             (pid, function, batch, *args, **kwargs)
             for pid, batch in enumerate(batches)
@@ -81,7 +82,7 @@ def batch_process(
             progproc.start()
     
             # Parallel process the batches
-            result = Parallel(n_jobs=n_workers,prefer="threads",backend='multiprocessing')(
+            result = Parallel(n_jobs=n_workers,prefer=prefer,backend=backend)(
                 delayed(task_wrapper)
                 (pid, function, batch, queue, *args, **kwargs)
                 for pid, batch in enumerate(batches)
