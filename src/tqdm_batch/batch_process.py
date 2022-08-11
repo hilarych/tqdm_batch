@@ -15,7 +15,7 @@ def batch_process(
     n_workers: int=8,
     show_progress: bool=True,
     sep_progress: bool=False,
-    prefer='thread',backend='multiprocessing',
+    prefer='threads',backend='multiprocessing',
     *args,
     **kwargs,
     ) -> List[Dict[str, Union[str, List[str]]]]:
