@@ -6,7 +6,7 @@ from multiprocessing import Manager
 from joblib import Parallel, delayed
 
 from .progress_bar import progress_bar
-from .task_wrapper import task_wrapper
+from .task_wrapper import task_wrapper,task_wrapper_no_q
 
 
 def batch_process(
@@ -59,10 +59,11 @@ def batch_process(
     if show_progress==False:
         # Parallel process the batches
         result = Parallel(n_jobs=n_workers,prefer="threads",backend='multiprocessing')(
-            delayed(function)
-            (batch,  *args, **kwargs)
-            for i, batch in enumerate(batches)
+            delayed(task_wrapper_no_q)
+            (pid, function, batch, *args, **kwargs)
+            for pid, batch in enumerate(batches)
         )
+    
         
     elif show_progress==True:
 
