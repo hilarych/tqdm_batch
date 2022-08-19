@@ -93,7 +93,4 @@ def batch_process(
             queue.put('done')
             progproc.join()
 
-    # Flatten result
-    flattened = [item for sublist in result for item in sublist]
-
-    return flattened
+    return [item for sublist in result for item in sublist]
